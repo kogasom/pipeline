@@ -264,20 +264,21 @@ func (m *Manager) deleteCluster(ctx context.Context, cluster CommonCluster, forc
 		)
 	}
 
-	// get kubeconfig
-	c, err := cluster.GetK8sConfig()
+	// delete k8s resources from the cluster
+	config, err := cluster.GetK8sConfig()
 	if err != nil {
-		err = emperror.Wrap(err, "cannot access Kubernetes cluster")
-		if !force {
-			cluster.UpdateStatus(pkgCluster.Error, err.Error())
-			return err
+		wrappedErr := emperror.Wrap(err, "cannot access Kubernetes cluster")
+		if err == ErrConfigNotExists {
+			// if the config does not exist, then we were not able to create any k8s resources earlier, so we can proceed with removing the infra
+			logger.Info("deleting unavailable cluster without removing resources: %v", err)
+		} else if force {
+			logger.Error(wrappedErr)
+		} else {
+			cluster.UpdateStatus(pkgCluster.Error, wrappedErr.Error())
+			return wrappedErr
 		}
-		logger.Error(err)
-	}
-
-	if c != nil {
-		// delete deployments
-		err = helm.DeleteAllDeployment(c)
+	} else {
+		err = helm.DeleteAllDeployment(config)
 		if err != nil {
 			err = emperror.Wrap(err, "failed to delete deployments")
 			if !force {
@@ -287,7 +288,7 @@ func (m *Manager) deleteCluster(ctx context.Context, cluster CommonCluster, forc
 			logger.Error(err)
 		}
 
-		err = deleteAllResources(c, logger)
+		err = deleteAllResources(config, logger)
 		if err != nil {
 			err = emperror.Wrap(err, "failed to delete Kubernetes resources")
 			if !force {
@@ -296,9 +297,6 @@ func (m *Manager) deleteCluster(ctx context.Context, cluster CommonCluster, forc
 			}
 			logger.Error(err)
 		}
-
-	} else {
-		logger.Info("skipping deployment deletion as kubeconfig is not available.")
 	}
 
 	// clean up dns registrations
