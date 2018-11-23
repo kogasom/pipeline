@@ -278,6 +278,15 @@ func GetCommonClusterFromModel(modelCluster *model.ClusterModel) (CommonCluster,
 
 		return gkeCluster, err
 
+	case pkgCluster.DigitalOcean:
+		// Create DigitalOcean struct
+		digitalOceanCluster, err := CreateDigitalOceanClusterFromModel(modelCluster)
+		if err != nil {
+			return nil, err
+		}
+
+		return digitalOceanCluster, err
+
 	case pkgCluster.Dummy:
 		dummyCluster, err := CreateDummyClusterFromModel(modelCluster)
 		if err != nil {
@@ -392,6 +401,14 @@ func CreateCommonClusterFromRequest(createClusterRequest *pkgCluster.CreateClust
 			return nil, err
 		}
 		return okeCluster, nil
+
+	case pkgCluster.DigitalOcean:
+		// Create DigitalOcean struct
+		digitalOceanCluster, err := CreateDigitalOceanClusterFromRequest(createClusterRequest, orgId, userId)
+		if err != nil {
+			return nil, err
+		}
+		return digitalOceanCluster, nil
 
 	}
 

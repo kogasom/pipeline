@@ -261,6 +261,15 @@ paths:
                                     properties:
                                         gke:
                                             $ref: '#/components/schemas/CreateGKEProperties'
+
+                            DigitalOcean:
+                                value:
+                                    name: "digitaloceancluster-pipelineuser-123"
+                                    location: ""
+                                    cloud: "digitalocean"
+                                    properties:
+                                        digitalocean:
+                                            $ref: '#/components/schemas/CreateDigitalOceanProperties'
         get:
             security:
                 -
@@ -4929,6 +4938,8 @@ components:
                         -
                             $ref: '#/components/schemas/CreateGKEProperties'
                         -
+                            $ref: '#/components/schemas/CreateDigitalOceanProperties'
+                        -
                             $ref: '#/components/schemas/CreateEKSProperties'
                         -
                             $ref: '#/components/schemas/CreateUpdateOKEProperties'
@@ -5129,6 +5140,46 @@ components:
                 instanceType:
                     type: string
                     example: "n1-standard-2"
+
+        CreateDigitalOceanProperties:
+            type: object
+            required:
+                - digitalocean
+            properties:
+                digitalocean:
+                    type: object
+                    required:
+                        - version
+                        - nodePools
+                    properties:
+                        version:
+                            type: string
+                            example: "1.12.1-do.2"
+                        tags:
+                            type: array
+                            items:
+                                type: string
+                        nodePools:
+                            type: object
+                            additionalProperties:
+                                $ref: '#/components/schemas/NodePoolsDigitalOcean'
+
+        NodePoolsDigitalOcean:
+            type: object
+            required:
+                - count
+                - size
+            properties:
+                count:
+                    type: integer
+                    example: 1
+                size:
+                    type: string
+                    example: "512mb"
+                tags:
+                    type: array
+                    items:
+                        type: string
 
         CreateUpdateOKEProperties:
             type: object
