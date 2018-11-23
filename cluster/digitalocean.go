@@ -344,7 +344,32 @@ func (c *DigitalOceanCluster) GetKubernetesUserName() (string, error) {
 
 //GetStatus gets cluster status
 func (c *DigitalOceanCluster) GetStatus() (*pkgCluster.GetClusterStatusResponse, error) {
-	return nil, nil
+	log.Info("Create cluster status response")
+
+	nodePools := make(map[string]*pkgCluster.NodePoolStatus)
+	for _, np := range c.model.NodePools {
+		if np != nil {
+			nodePools[np.Name] = &pkgCluster.NodePoolStatus{
+				Count:        np.Count,
+				InstanceType: np.Size,
+				Version:      c.model.MasterVersion,
+			}
+		}
+	}
+
+	return &pkgCluster.GetClusterStatusResponse{
+		Status:            c.model.Cluster.Status,
+		StatusMessage:     c.model.Cluster.StatusMessage,
+		Name:              c.model.Cluster.Name,
+		Location:          c.model.Cluster.Location,
+		Cloud:             c.model.Cluster.Cloud,
+		Distribution:      c.model.Cluster.Distribution,
+		Spot:              false,
+		ResourceID:        c.model.Cluster.ID,
+		Version:           c.model.MasterVersion,
+		NodePools:         nodePools,
+		CreatorBaseFields: *NewCreatorBaseFields(c.model.Cluster.CreatedAt, c.model.Cluster.CreatedBy),
+	}, nil
 }
 
 // GetClusterDetails gets cluster details from cloud
