@@ -69,6 +69,11 @@ const (
 	ClientX509Url = "client_x509_cert_url"
 )
 
+// DigitalOcean keys
+const (
+	PAT = "pat"
+)
+
 // Kubernetes keys
 const (
 	K8SConfig = "K8Sconfig"
@@ -179,6 +184,12 @@ var DefaultRules = map[string]Meta{
 			{Name: TokenUri, Required: true},
 			{Name: AuthX509Url, Required: true},
 			{Name: ClientX509Url, Required: true},
+		},
+		Sourcing: EnvVar,
+	},
+	cluster.DigitalOcean: {
+		Fields: []FieldMeta{
+			{Name: PAT, Required: true},
 		},
 		Sourcing: EnvVar,
 	},

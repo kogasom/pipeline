@@ -21,6 +21,7 @@ import (
 
 	"github.com/banzaicloud/pipeline/pkg/cluster/acsk"
 	"github.com/banzaicloud/pipeline/pkg/cluster/aks"
+	"github.com/banzaicloud/pipeline/pkg/cluster/digitalocean"
 	"github.com/banzaicloud/pipeline/pkg/cluster/dummy"
 	"github.com/banzaicloud/pipeline/pkg/cluster/eks"
 	"github.com/banzaicloud/pipeline/pkg/cluster/gke"
@@ -48,13 +49,14 @@ const (
 
 // Cloud constants
 const (
-	Alibaba    = "alibaba"
-	Amazon     = "amazon"
-	Azure      = "azure"
-	Google     = "google"
-	Dummy      = "dummy"
-	Kubernetes = "kubernetes"
-	Oracle     = "oracle"
+	Alibaba      = "alibaba"
+	Amazon       = "amazon"
+	Azure        = "azure"
+	Google       = "google"
+	Dummy        = "dummy"
+	Kubernetes   = "kubernetes"
+	Oracle       = "oracle"
+	DigitalOcean = "digitalocean"
 )
 
 // Distribution constants
@@ -116,13 +118,14 @@ type CreateClusterRequest struct {
 
 // CreateClusterProperties contains the cluster flavor specific properties.
 type CreateClusterProperties struct {
-	CreateClusterACSK       *acsk.CreateClusterACSK             `json:"acsk,omitempty" yaml:"acsk,omitempty"`
-	CreateClusterEKS        *eks.CreateClusterEKS               `json:"eks,omitempty" yaml:"eks,omitempty"`
-	CreateClusterAKS        *aks.CreateClusterAKS               `json:"aks,omitempty" yaml:"aks,omitempty"`
-	CreateClusterGKE        *gke.CreateClusterGKE               `json:"gke,omitempty" yaml:"gke,omitempty"`
-	CreateClusterDummy      *dummy.CreateClusterDummy           `json:"dummy,omitempty" yaml:"dummy,omitempty"`
-	CreateClusterKubernetes *kubernetes.CreateClusterKubernetes `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty"`
-	CreateClusterOKE        *oke.Cluster                        `json:"oke,omitempty" yaml:"oke,omitempty"`
+	CreateClusterACSK         *acsk.CreateClusterACSK                 `json:"acsk,omitempty" yaml:"acsk,omitempty"`
+	CreateClusterEKS          *eks.CreateClusterEKS                   `json:"eks,omitempty" yaml:"eks,omitempty"`
+	CreateClusterAKS          *aks.CreateClusterAKS                   `json:"aks,omitempty" yaml:"aks,omitempty"`
+	CreateClusterGKE          *gke.CreateClusterGKE                   `json:"gke,omitempty" yaml:"gke,omitempty"`
+	CreateClusterDummy        *dummy.CreateClusterDummy               `json:"dummy,omitempty" yaml:"dummy,omitempty"`
+	CreateClusterKubernetes   *kubernetes.CreateClusterKubernetes     `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty"`
+	CreateClusterOKE          *oke.Cluster                            `json:"oke,omitempty" yaml:"oke,omitempty"`
+	CreateClusterDigitalOcean *digitalocean.CreateClusterDigitalOcean `json:"digitalocean,omitempty" yaml:"digitalocean,omitempty"`
 }
 
 // PostHookParam describes posthook params in create request
@@ -306,6 +309,9 @@ func (r *CreateClusterRequest) Validate() error {
 	case Oracle:
 		// oracle validate
 		return r.Properties.CreateClusterOKE.Validate(false)
+	case DigitalOcean:
+		// digitalocean validate
+		return r.Properties.CreateClusterDigitalOcean.Validate()
 	default:
 		// not supported cloud type
 		return pkgErrors.ErrorNotSupportedCloudType
