@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"context"
+	"time"
 
 	pipConfig "github.com/banzaicloud/pipeline/config"
 	"github.com/banzaicloud/pipeline/internal/cluster"
@@ -244,6 +245,23 @@ func (c *DigitalOceanCluster) CreateCluster() error {
 	log.Infof("Successfully created cluster %s", cluster.Name)
 	c.digitalOceanCluster = cluster
 
+	if cluster != nil {
+		log.Infof("Cluster %s create is called", cluster.Name)
+		log.Info("Waiting for cluster...")
+
+		for cluster.Status.State != "running" {
+			log.Infof("Cluster status: %s", cluster.Status.State)
+			time.Sleep(time.Second * 5)
+			cluster, _, err = client.Kubernetes.Get(ctx, cluster.ID)
+
+			if err != nil {
+				return errors.Wrap(err, "error during getting cluster status")
+			}
+		}
+
+		log.Info("Cluster is running!")
+	}
+
 	// TODO: on existing cluster update it instead? like at GKE?
 
 	return nil
@@ -295,10 +313,6 @@ func (c *DigitalOceanCluster) DownloadK8sConfig() ([]byte, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get DigitalOcean K8s config")
 	}
-
-	// TODO: this is not working properly
-	// at GKE there is a service account token generated via REST API and the final
-	// config is assembled manually
 
 	return config.KubeconfigYAML, nil
 }
