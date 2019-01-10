@@ -48,13 +48,14 @@ const (
 
 // Cloud constants
 const (
-	Alibaba    = "alibaba"
-	Amazon     = "amazon"
-	Azure      = "azure"
-	Google     = "google"
-	Dummy      = "dummy"
-	Kubernetes = "kubernetes"
-	Oracle     = "oracle"
+	Alibaba      = "alibaba"
+	Amazon       = "amazon"
+	Azure        = "azure"
+	Google       = "google"
+	Dummy        = "dummy"
+	Kubernetes   = "kubernetes"
+	Oracle       = "oracle"
+	DigitalOcean = "digitalocean"
 )
 
 // Distribution constants

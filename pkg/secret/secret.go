@@ -16,6 +16,7 @@ package secret
 
 import (
 	"github.com/banzaicloud/pipeline/pkg/cluster"
+	digitalocean "github.com/banzaicloud/pipeline/pkg/providers/digitalocean/secret"
 	oracle "github.com/banzaicloud/pipeline/pkg/providers/oracle/secret"
 )
 
@@ -196,6 +197,11 @@ var DefaultRules = map[string]Meta{
 			{Name: oracle.APIKeyFingerprint, Required: true},
 			{Name: oracle.Region, Required: true},
 			{Name: oracle.CompartmentOCID, Required: true},
+		},
+	},
+	cluster.DigitalOcean: {
+		Fields: []FieldMeta{
+			{Name: digitalocean.AccessToken, Required: true},
 		},
 	},
 	SSHSecretType: {

@@ -16,6 +16,7 @@ package verify
 
 import (
 	pkgCluster "github.com/banzaicloud/pipeline/pkg/cluster"
+	digitalocean "github.com/banzaicloud/pipeline/pkg/providers/digitalocean/secret"
 	oracle "github.com/banzaicloud/pipeline/pkg/providers/oracle/secret"
 )
 
@@ -38,6 +39,8 @@ func NewVerifier(cloudType string, values map[string]string) Verifier {
 		return CreateGKESecret(values)
 	case pkgCluster.Oracle:
 		return oracle.CreateOCISecret(values)
+	case pkgCluster.DigitalOcean:
+		return digitalocean.CreateDOSecret(values)
 	default:
 		return nil
 	}

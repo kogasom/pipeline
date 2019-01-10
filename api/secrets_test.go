@@ -40,6 +40,7 @@ func TestIsValidSecretType(t *testing.T) {
 		{name: "Azure secret type", secretType: clusterTypes.Azure, error: nil},
 		{name: "Google secret type", secretType: clusterTypes.Google, error: nil},
 		{name: "Oracle secret type", secretType: clusterTypes.Oracle, error: nil},
+		{name: "DigitalOcean secret type", secretType: clusterTypes.DigitalOcean, error: nil},
 		{name: "not supported secret type", secretType: invalidSecretType, error: api.ErrNotSupportedSecretType},
 	}
 
@@ -67,6 +68,7 @@ func TestListAllowedSecretTypes(t *testing.T) {
 		{name: "List aks required keys", secretType: clusterTypes.Azure, expectedResponse: aksRequiredKeys, error: nil},
 		{name: "List gke required keys", secretType: clusterTypes.Google, expectedResponse: gkeRequiredKeys, error: nil},
 		{name: "List oci required keys", secretType: clusterTypes.Oracle, expectedResponse: OCIRequiredKeys, error: nil},
+		{name: "List digitalocean required keys", secretType: clusterTypes.DigitalOcean, expectedResponse: DORequiredKeys, error: nil},
 		{name: "Invalid secret type", secretType: invalidSecretType, expectedResponse: nil, error: api.ErrNotSupportedSecretType},
 	}
 
@@ -98,11 +100,13 @@ func TestAddSecret(t *testing.T) {
 		{name: "add aks secret", request: aksCreateSecretRequest, isError: false, verifier: nil},
 		{name: "add gke secret", request: gkeCreateSecretRequest, isError: false, verifier: nil},
 		{name: "add oci secret", request: OCICreateSecretRequest, isError: false, verifier: nil},
+		{name: "add DigitalOcean secret", request: DOCreateSecretRequest, isError: false, verifier: nil},
 
 		{name: "add aws secret (missing key(s))", request: awsMissingKey, isError: true, verifier: nil},
 		{name: "add aks secret (missing key(s))", request: aksMissingKey, isError: true, verifier: nil},
 		{name: "add gke secret (missing key(s))", request: gkeMissingKey, isError: true, verifier: nil},
 		{name: "add oci secret (missing key(s))", request: OCIMissingKey, isError: true, verifier: nil},
+		{name: "add DigitalOcean secret (missing key(s))", request: DOMissingKey, isError: true, verifier: nil},
 	}
 
 	for _, tc := range cases {
@@ -127,6 +131,7 @@ func TestListSecrets(t *testing.T) {
 	secret.Store.Store(orgId, &aksCreateSecretRequest)
 	secret.Store.Store(orgId, &gkeCreateSecretRequest)
 	secret.Store.Store(orgId, &OCICreateSecretRequest)
+	secret.Store.Store(orgId, &DOCreateSecretRequest)
 
 	cases := []struct {
 		name           string
@@ -138,6 +143,7 @@ func TestListSecrets(t *testing.T) {
 		{name: "List aks secrets", secretType: clusterTypes.Azure, tag: aksCreateSecretRequest.Tags, expectedValues: aksExpectedItems},
 		{name: "List gke secrets", secretType: clusterTypes.Google, tag: gkeCreateSecretRequest.Tags, expectedValues: gkeExpectedItems},
 		{name: "List oci secrets", secretType: clusterTypes.Oracle, tag: OCICreateSecretRequest.Tags, expectedValues: OCIExpectedItems},
+		{name: "List DigitalOcean secrets", secretType: clusterTypes.DigitalOcean, tag: DOCreateSecretRequest.Tags, expectedValues: DOExpectedItems},
 		{name: "List all secrets", secretType: "", tag: nil, expectedValues: allExpectedItems},
 		{name: "List repo:pipeline secrets", secretType: "", tag: []string{"repo:pipeline"}, expectedValues: awsExpectedItems},
 	}
@@ -176,6 +182,7 @@ func TestDeleteSecrets(t *testing.T) {
 		{name: "Delete azure secret", secretId: secretIdAzure},
 		{name: "Delete google secret", secretId: secretIdGoogle},
 		{name: "Delete oracle secret", secretId: secretIdOracle},
+		{name: "Delete digitalocean secret", secretId: secretIdDigitalOcean},
 	}
 
 	for _, tc := range cases {
@@ -202,17 +209,19 @@ func (s sortableSecretItemResponses) Less(i, j int) bool {
 }
 
 var (
-	secretNameAmazon = "my-aws-secret"
-	secretNameAzure  = "my-aks-secret"
-	secretNameGoogle = "my-gke-secret"
-	secretNameOracle = "my-oci-secret"
+	secretNameAmazon       = "my-aws-secret"
+	secretNameAzure        = "my-aks-secret"
+	secretNameGoogle       = "my-gke-secret"
+	secretNameOracle       = "my-oci-secret"
+	secretNameDigitalOcean = "my-do-secret"
 )
 
 var (
-	secretIdAmazon = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameAmazon)))
-	secretIdAzure  = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameAzure)))
-	secretIdGoogle = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameGoogle)))
-	secretIdOracle = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameOracle)))
+	secretIdAmazon       = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameAmazon)))
+	secretIdAzure        = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameAzure)))
+	secretIdGoogle       = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameGoogle)))
+	secretIdOracle       = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameOracle)))
+	secretIdDigitalOcean = fmt.Sprintf("%x", sha256.Sum256([]byte(secretNameDigitalOcean)))
 )
 
 const (
@@ -259,6 +268,11 @@ const (
 	OCIAPIKeyFingerprint = "OCIAPIKeyFingerprint"
 	OCIRegion            = "OCIRegion"
 	OCICompartmentOCID   = "OCICompartmentOCID"
+)
+
+// DigitalOcean test constants
+const (
+	DOAccessToken = "DigitalOceanAccessToken"
 )
 
 // Create requests
@@ -315,6 +329,14 @@ var (
 		},
 	}
 
+	DOCreateSecretRequest = secret.CreateSecretRequest{
+		Name: secretNameDigitalOcean,
+		Type: clusterTypes.DigitalOcean,
+		Values: map[string]string{
+			"personal_access_token": DOAccessToken,
+		},
+	}
+
 	awsMissingKey = secret.CreateSecretRequest{
 		Name: secretNameAmazon,
 		Type: clusterTypes.Amazon,
@@ -354,6 +376,12 @@ var (
 			"api_key_fingerprint": OCIAPIKeyFingerprint,
 			"region":              OCIRegion,
 		},
+	}
+
+	DOMissingKey = secret.CreateSecretRequest{
+		Name:   secretNameDigitalOcean,
+		Type:   clusterTypes.DigitalOcean,
+		Values: map[string]string{},
 	}
 )
 
@@ -408,6 +436,16 @@ var (
 		},
 	}
 
+	DOExpectedItems = []*secret.SecretItemResponse{
+		{
+			ID:      secretIdDigitalOcean,
+			Name:    secretNameDigitalOcean,
+			Type:    clusterTypes.DigitalOcean,
+			Values:  toHiddenValues(clusterTypes.DigitalOcean),
+			Version: 1,
+		},
+	}
+
 	allExpectedItems = []*secret.SecretItemResponse{
 		{
 			ID:      secretIdGoogle,
@@ -436,6 +474,13 @@ var (
 			Values:  toHiddenValues(clusterTypes.Oracle),
 			Version: 1,
 		},
+		{
+			ID:      secretIdDigitalOcean,
+			Name:    secretNameDigitalOcean,
+			Type:    clusterTypes.DigitalOcean,
+			Values:  toHiddenValues(clusterTypes.DigitalOcean),
+			Version: 1,
+		},
 	}
 )
 
@@ -449,4 +494,6 @@ var (
 	gkeRequiredKeys = secretTypes.DefaultRules[clusterTypes.Google]
 
 	OCIRequiredKeys = secretTypes.DefaultRules[clusterTypes.Oracle]
+
+	DORequiredKeys = secretTypes.DefaultRules[clusterTypes.DigitalOcean]
 )

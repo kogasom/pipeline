@@ -19,16 +19,18 @@ import (
 	"github.com/banzaicloud/pipeline/pkg/providers/alibaba"
 	"github.com/banzaicloud/pipeline/pkg/providers/amazon"
 	"github.com/banzaicloud/pipeline/pkg/providers/azure"
+	"github.com/banzaicloud/pipeline/pkg/providers/digitalocean"
 	"github.com/banzaicloud/pipeline/pkg/providers/google"
 	"github.com/banzaicloud/pipeline/pkg/providers/oracle"
 )
 
 const (
-	Alibaba = alibaba.Provider
-	Amazon  = amazon.Provider
-	Azure   = azure.Provider
-	Google  = google.Provider
-	Oracle  = oracle.Provider
+	Alibaba      = alibaba.Provider
+	Amazon       = amazon.Provider
+	Azure        = azure.Provider
+	Google       = google.Provider
+	Oracle       = oracle.Provider
+	DigitalOcean = digitalocean.Provider
 
 	BucketCreating    = "CREATING"
 	BucketCreated     = "AVAILABLE"
@@ -48,6 +50,7 @@ func ValidateProvider(provider string) error {
 	case Google:
 	case Azure:
 	case Oracle:
+	case DigitalOcean:
 	default:
 		// TODO: create an error value in this package instead
 		return pkgErrors.ErrorNotSupportedCloudType

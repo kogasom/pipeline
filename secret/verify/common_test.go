@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	pkgCluster "github.com/banzaicloud/pipeline/pkg/cluster"
+	digitalocean "github.com/banzaicloud/pipeline/pkg/providers/digitalocean/secret"
 	oracle "github.com/banzaicloud/pipeline/pkg/providers/oracle/secret"
 	pkgSecret "github.com/banzaicloud/pipeline/pkg/secret"
 )
@@ -61,6 +62,12 @@ func TestNewVerifier(t *testing.T) {
 			values:    OCICredentialMap,
 			verifier:  oracle.CreateOCISecret(OCICredentialMap),
 		},
+		{
+			name:      "digitalocean validator",
+			cloudType: pkgCluster.DigitalOcean,
+			values:    DOCredentialMap,
+			verifier:  digitalocean.CreateDOSecret(DOCredentialMap),
+		},
 	}
 
 	for _, tc := range cases {
@@ -100,6 +107,8 @@ const (
 	testAPIKey             = "testAPIKey"
 	testAPIKeyFringerprint = "testAPIKeyFringerprint"
 	testRegion             = "testRegion"
+
+	testDOAccessToken = "testDigitalOceanAccessToken"
 )
 
 var (
@@ -134,5 +143,9 @@ var (
 		oracle.APIKey:            testAPIKey,
 		oracle.APIKeyFingerprint: testAPIKeyFringerprint,
 		oracle.Region:            testRegion,
+	}
+
+	DOCredentialMap = map[string]string{
+		digitalocean.AccessToken: testDOAccessToken,
 	}
 )
