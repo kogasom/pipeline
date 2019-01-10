@@ -382,6 +382,14 @@
   version = "v4.0.0"
 
 [[projects]]
+  digest = "1:ea3b7e0433c21fd9d3db5ab2a3c55359835aecd5f83e3d514bc3f47e84933113"
+  name = "github.com/digitalocean/godo"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "360ee5cab86ffe07b3d5009a3bbb658862c55cf8"
+  version = "v1.7.3"
+
+[[projects]]
   branch = "master"
   digest = "1:ec6271918b59b872a2d25e374569a4f75f1839d91e4191470c297b7eaaaf7641"
   name = "github.com/dimchansky/utfbom"
@@ -1415,6 +1423,14 @@
   version = "0.2.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:a0aee89faaf795424d978b6b4bcee4af3dc71f5680e5e1b30bd1528639e61a9a"
+  name = "github.com/tent/http-link-go"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "ac974c61c2f990f4115b119354b5e0b47550e888"
+
+[[projects]]
   digest = "1:1ed7acee0f08ecd69b52fa94213269e880900a910e1631f18fac6f9c908b9408"
   name = "github.com/ugorji/go"
   packages = ["codec"]
@@ -2183,6 +2199,7 @@
     "github.com/casbin/gorm-adapter",
     "github.com/dgrijalva/jwt-go",
     "github.com/didip/tollbooth",
+    "github.com/digitalocean/godo",
     "github.com/docker/libcompose/yaml",
     "github.com/drone/drone-go/drone",
     "github.com/ghodss/yaml",
