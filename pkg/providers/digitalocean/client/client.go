@@ -62,3 +62,10 @@ func (do *DigitalOcean) Validate() error {
 
 	return err
 }
+
+// GetOptions retrieves DigitalOcean Kubernetes options
+func (do *DigitalOcean) GetOptions() (*godo.KubernetesOptions, error) {
+	options, _, err := do.NewClient().Kubernetes.GetOptions(context.TODO())
+
+	return options, err
+}

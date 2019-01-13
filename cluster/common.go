@@ -390,6 +390,13 @@ func CreateCommonClusterFromRequest(createClusterRequest *pkgCluster.CreateClust
 		}
 		return okeCluster, nil
 
+	case pkgCluster.DigitalOcean:
+		// Create DigitalOcean struct
+		doCluster, err := CreateDOClusterFromRequest(createClusterRequest, orgId, userId)
+		if err != nil {
+			return nil, err
+		}
+		return doCluster, nil
 	}
 
 	return nil, pkgErrors.ErrorNotSupportedCloudType

@@ -22,6 +22,7 @@ import (
 
 	"github.com/banzaicloud/pipeline/config"
 	pkgCluster "github.com/banzaicloud/pipeline/pkg/cluster"
+	doModel "github.com/banzaicloud/pipeline/pkg/providers/digitalocean/model"
 	modelOracle "github.com/banzaicloud/pipeline/pkg/providers/oracle/model"
 	"github.com/banzaicloud/pipeline/secret"
 	"github.com/banzaicloud/pipeline/utils"
@@ -72,6 +73,7 @@ type ClusterModel struct {
 	Dummy          DummyClusterModel      `gorm:"foreignkey:ID"`
 	Kubernetes     KubernetesClusterModel `gorm:"foreignkey:ID"`
 	OKE            modelOracle.Cluster
+	DO             doModel.Cluster
 	CreatedBy      uint
 }
 

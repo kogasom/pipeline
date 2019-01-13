@@ -27,6 +27,7 @@ import (
 	"github.com/banzaicloud/pipeline/pkg/cluster/kubernetes"
 	pkgCommon "github.com/banzaicloud/pipeline/pkg/common"
 	pkgErrors "github.com/banzaicloud/pipeline/pkg/errors"
+	doRequest "github.com/banzaicloud/pipeline/pkg/providers/digitalocean/cluster/request"
 	oke "github.com/banzaicloud/pipeline/pkg/providers/oracle/cluster"
 	"k8s.io/api/core/v1"
 )
@@ -124,6 +125,7 @@ type CreateClusterProperties struct {
 	CreateClusterDummy      *dummy.CreateClusterDummy           `json:"dummy,omitempty" yaml:"dummy,omitempty"`
 	CreateClusterKubernetes *kubernetes.CreateClusterKubernetes `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty"`
 	CreateClusterOKE        *oke.Cluster                        `json:"oke,omitempty" yaml:"oke,omitempty"`
+	CreateClusterDO         *doRequest.Cluster                  `json:"digitalocean,omitempty" yaml:"oke,omitempty"`
 }
 
 // PostHookParam describes posthook params in create request
@@ -307,6 +309,9 @@ func (r *CreateClusterRequest) Validate() error {
 	case Oracle:
 		// oracle validate
 		return r.Properties.CreateClusterOKE.Validate(false)
+	case DigitalOcean:
+		// digitalocean validate
+		return r.Properties.CreateClusterDO.Validate()
 	default:
 		// not supported cloud type
 		return pkgErrors.ErrorNotSupportedCloudType
