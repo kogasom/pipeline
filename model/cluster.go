@@ -73,7 +73,7 @@ type ClusterModel struct {
 	Dummy          DummyClusterModel      `gorm:"foreignkey:ID"`
 	Kubernetes     KubernetesClusterModel `gorm:"foreignkey:ID"`
 	OKE            modelOracle.Cluster
-	DO             doModel.Cluster
+	DOKE           doModel.Cluster `gorm:"foreignkey:ID"`
 	CreatedBy      uint
 }
 

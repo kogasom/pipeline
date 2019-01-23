@@ -107,17 +107,21 @@ func (cluster *DOCluster) GetSecretWithValidation() (*secret.SecretItemResponse,
 
 // Persistence
 // TODO
-func (cluster *DOCluster) Persist(string, string) error {
-	return nil
+func (cluster *DOCluster) Persist(status, statusMessage string) error {
+	return cluster.modelCluster.UpdateStatus(status, statusMessage)
 }
 
 // TODO
-func (cluster *DOCluster) UpdateStatus(string, string) error {
-	return nil
+func (cluster *DOCluster) UpdateStatus(status, statusMessage string) error {
+	return cluster.modelCluster.UpdateStatus(status, statusMessage)
 }
 
 // TODO
 func (cluster *DOCluster) DeleteFromDatabase() error {
+	err := cluster.modelCluster.Delete()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -135,7 +139,7 @@ func (cluster *DOCluster) ValidateCreationFields(r *pkgCluster.CreateClusterRequ
 		return err
 	}
 
-	return cm.ValidateModel(&cluster.modelCluster.DO)
+	return cm.ValidateModel(&cluster.modelCluster.DOKE)
 }
 
 // TODO
@@ -238,7 +242,7 @@ func CreateDOClusterFromRequest(request *pkgCluster.CreateClusterRequest, orgId,
 		return &cluster, err
 	}
 
-	cluster.modelCluster.DO = Model
+	cluster.modelCluster.DOKE = Model
 
 	return &cluster, nil
 }

@@ -24,8 +24,8 @@ import (
 
 // TableName constants
 const (
-	ClustersTableName          = "digitalocean_clusters"
-	ClustersNodePoolsTableName = "digitalocean_node_pools"
+	ClustersTableName          = "digitalocean_doke_clusters"
+	ClustersNodePoolsTableName = "digitalocean_doke_node_pools"
 )
 
 // Cluster describes the DigitalOcean cluster model
@@ -41,7 +41,7 @@ type Cluster struct {
 	Endpoint      string
 	Tags          []string
 
-	NodePools []*NodePool `json:"node_pools,omitempty"`
+	NodePools []*NodePool `gorm:"foreignkey:ClusterID"`
 
 	CreatedBy uint
 	CreatedAt time.Time
